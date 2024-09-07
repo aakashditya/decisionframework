@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Prioritization Framework</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; }
+        .section { margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 5px; margin-bottom: 10px; }
+        button { padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        #results { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Input Prioritization Framework</h1>
+    
+    <div class="section">
+        <h2>1. Define Your Outcome</h2>
+        <input type="text" id="outcome" placeholder="Enter your desired outcome">
+    </div>
+
+    <div class="section">
+        <h2>2. List Your Inputs</h2>
+        <div id="inputsList"></div>
+        <button onclick="addInput()">Add Input</button>
+    </div>
+
+    <div class="section">
+        <h2>3. Evaluation Criteria</h2>
+        <table id="evaluationTable">
+            <tr>
+                <th>Input</th>
+                <th>Impact if Removed (1-10)</th>
+                <th>Standalone Value (1-10)</th>
+                <th>Direct Effect (1-10)</th>
+                <th>Synergy Potential (1-10)</th>
+                <th>Effort-to-Result (1-10)</th>
+                <th>Core to Explanation (1-10)</th>
+                <th>Historical Success (1-10)</th>
+                <th>Resource Priority (1-10)</th>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>4. Results</h2>
+        <div id="results"></div>
+    </div>
+
+    <div class="section">
+        <h2>5. Action Plan</h2>
+        <textarea id="focusAreas" placeholder="Enter two focus areas"></textarea>
+        <textarea id="specificActions" placeholder="Enter two specific actions"></textarea>
+        <input type="text" id="measurementMethod" placeholder="Enter measurement method">
+        <input type="date" id="reviewDate">
+    </div>
+
+    <button onclick="calculateResults()">Calculate Results</button>
+
+    <script>
+        let inputs = [];
+
+        function addInput() {
+            const input = prompt("Enter an input:");
+            if (input) {
+                inputs.push(input);
+                updateInputsList();
+                updateEvaluationTable();
+            }
+        }
+
+        function updateInputsList() {
+            const inputsList = document.getElementById('inputsList');
+            inputsList.innerHTML = inputs.map(input => `<div>${input}</div>`).join('');
+        }
+
+        function updateEvaluationTable() {
+            const table = document.getElementById('evaluationTable');
+            table.innerHTML = `
+                <tr>
+                    <th>Input</th>
+                    <th>Impact if Removed (1-10)</th>
+                    <th>Standalone Value (1-10)</th>
+                    <th>Direct Effect (1-10)</th>
+                    <th>Synergy Potential (1-10)</th>
+                    <th>Effort-to-Result (1-10)</th>
+                    <th>Core to Explanation (1-10)</th>
+                    <th>Historical Success (1-10)</th>
+                    <th>Resource Priority (1-10)</th>
+                </tr>
+            ` + inputs.map(input => `
+                <tr>
+                    <td>${input}</td>
+                    <td><input type="number" min="1" max="10" class="impact"></td>
+                    <td><input type="number" min="1" max="10" class="standalone"></td>
+                    <td><input type="number" min="1" max="10" class="direct"></td>
+                    <td><input type="number" min="1" max="10" class="synergy"></td>
+                    <td><input type="number" min="1" max="10" class="effort"></td>
+                    <td><input type="number" min="1" max="10" class="core"></td>
+                    <td><input type="number" min="1" max="10" class="historical"></td>
+                    <td><input type="number" min="1" max="10" class="resource"></td>
+                </tr>
+            `).join('');
+        }
+
+        function calculateResults() {
+            const rows = document.querySelectorAll('#evaluationTable tr:not(:first-child)');
+            const scores = Array.from(rows).map((row, index) => {
+                const impact = parseInt(row.querySelector('.impact').value) || 0;
+                const standalone = parseInt(row.querySelector('.standalone').value) || 0;
+                const direct = parseInt(row.querySelector('.direct').value) || 0;
+                const synergy = parseInt(row.querySelector('.synergy').value) || 0;
+                const effort = parseInt(row.querySelector('.effort').value) || 0;
+                const core = parseInt(row.querySelector('.core').value) || 0;
+                const historical = parseInt(row.querySelector('.historical').value) || 0;
+                const resource = parseInt(row.querySelector('.resource').value) || 0;
+                const total = impact + standalone + direct + synergy + effort + core + historical + resource;
+                return { input: inputs[index], total };
+            });
+
+            scores.sort((a, b) => b.total - a.total);
+
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <h3>Top Inputs:</h3>
+                <p>🥇 Highest Impact Input: ${scores[0].input}</p>
+                <p>🥈 Second Highest Impact Input: ${scores[1].input}</p>
+                <h3>All Inputs Ranked:</h3>
+                <ol>${scores.map(score => `<li>${score.input} (Score: ${score.total})</li>`).join('')}</ol>
+            `;
+        }
+    </script>
+</body>
+</html>
